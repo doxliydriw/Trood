@@ -131,11 +131,11 @@ const ProfileForm = () => {
         userLink: newLinkList,
       };
       saveUserTostorage(updatedValues);
-      console.log("Submitted:", updatedValues);
       setEditMode(false);
     },
   });
 
+  // Trigger the EditMode on change of form fields
   const handleChangeWithEditMode = (e) => {
     setEditMode(true);
     formik.handleChange(e);
@@ -158,10 +158,8 @@ const ProfileForm = () => {
         await schema.fields.userInterests.validate(updatedList);
         setNewInterestList((prevList) => {
           const updatedList = [...prevList, newInterest];
-          console.log("Updated Interest List:", updatedList);
           return updatedList;
         });
-
         setNewInterest("");
         setAddInterestsVisible(!addInterestsVisible);
         setEditMode(true);
@@ -188,10 +186,8 @@ const ProfileForm = () => {
         await schema.fields.userPotentialInterests.validate(updatedList);
         setNewPotentialInterestList((prevList) => {
           const updatedList = [...prevList, newPotentialInterest];
-          console.log("Updated Potential Interest List:", updatedList);
           return updatedList;
         });
-
         setNewPotentialInterest("");
         setaddPotentialInterestsVisible(!addPotentialInterestsVisible);
         setEditMode(true);
@@ -214,12 +210,10 @@ const ProfileForm = () => {
         return;
       }
       try {
-        console.log(newLink);
         const updatedList = [...newLinkList, newLink];
         await schema.fields.userLink.validate(updatedList);
         setNewLinkList((prevList) => {
           const updatedList = [...prevList, newLink];
-          console.log("Updated Link List:", updatedList);
           return updatedList;
         });
         setNewLink({});
@@ -230,10 +224,6 @@ const ProfileForm = () => {
       }
     }
   };
-
-  useEffect(() => {
-    console.log("Formik values updated:", formik.values);
-  }, [formik.values]);
 
   //Reset form data to the state when page was rendered.
   const cancelEdit = (initialValues) => {
@@ -344,7 +334,7 @@ const ProfileForm = () => {
             </div>
           )}
         </PrivacyRadioGroup>
-        {/* Additional  choices */}
+        {/* Additional  choices - interest*/}
         <AditionalChoiceBox>
           <FormText>The scopes of your interest:</FormText>
           {newInterestList &&
@@ -367,6 +357,7 @@ const ProfileForm = () => {
             onClick={handleInterestAdd}
           />
         </AditionalChoiceBox>
+        {/* Additional  choices - Potential interest*/}
         <AditionalChoiceBox>
           <FormText>Potential interests:</FormText>
           {newPotentialInterestList &&
@@ -389,6 +380,7 @@ const ProfileForm = () => {
             onClick={handlePotentialInterestAdd}
           />
         </AditionalChoiceBox>
+        {/* Additional  choices - web links*/}
         <AditionalChoiceBox>
           <FormText>Your links:</FormText>
           {newLinkList &&

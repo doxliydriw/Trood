@@ -101,18 +101,18 @@ border-radius: 50%;
 background: transparent;
 border: 2px solid #49535C;
 
- &::after {
-    content: '';
-    display: none;
-    width: 12px;
-    height: 12px;
-    background: #49535C;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+&::after {
+  content: '';
+  display: none;
+  width: 12px;
+  height: 12px;
+  background: #49535C;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 `
 export const RadioInput = styled.input`
 opacity: 0;
@@ -151,7 +151,6 @@ cursor: pointer;
 &:hover {
  opacity: 0.8;
 }
-
 ${({ $topstyles }) => $topstyles};
 `
 
@@ -184,7 +183,6 @@ text-align: left;
 }
 `
 
-
 export const LinkBox = styled.div`
 width: 100%;
 display: grid;
@@ -207,7 +205,6 @@ overflow: hidden;
 text-overflow: ellipsis;
 `
 
-
 export const ChoiceBlock = styled.div`
 display: grid;
 grid-template-columns: 1fr 1fr;
@@ -226,4 +223,3 @@ border-radius: 6px;
 cursor: pointer;
 ${({ $topstyles }) => $topstyles};
 `
-
