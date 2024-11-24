@@ -45,6 +45,11 @@ const ProfileForm = () => {
     useState(false);
   const [newPotentialInterest, setNewPotentialInterest] = useState("");
   const [newPotentialInterestList, setNewPotentialInterestList] = useState([]);
+  /* Control openning of input to add a new Profile Link to users list
+   */
+  const [addLinkVisible, setAddLinkVisible] = useState(false);
+  const [newLink, setNewLink] = useState({});
+  const [newLinkList, setNewLinkList] = useState([]);
 
   /* Check if user data is available in lockalstorage
   and pass it to form values
@@ -62,6 +67,9 @@ const ProfileForm = () => {
       }
       if (storedUserData.userPotentialInterests) {
         setNewPotentialInterestList(storedUserData.userPotentialInterests);
+      }
+      if (storedUserData.userLink) {
+        setNewLinkList(storedUserData.userLink);
       }
       setAvatarPreview(storedUserData.avatar ? storedUserData.avatar : null);
     } else {
@@ -120,6 +128,7 @@ const ProfileForm = () => {
         ...values,
         userInterests: newInterestList,
         userPotentialInterests: newPotentialInterestList,
+        userLink: newLinkList,
       };
       saveUserTostorage(updatedValues);
       console.log("Submitted:", updatedValues);
@@ -136,6 +145,8 @@ const ProfileForm = () => {
   const handleInterestAdd = async () => {
     if (!addInterestsVisible) {
       setAddInterestsVisible(!addInterestsVisible);
+      setaddPotentialInterestsVisible(false);
+      setAddLinkVisible(false);
       return;
     } else {
       if (newInterest.trim() === "") {
@@ -164,6 +175,8 @@ const ProfileForm = () => {
   const handlePotentialInterestAdd = async () => {
     if (!addPotentialInterestsVisible) {
       setaddPotentialInterestsVisible(!addPotentialInterestsVisible);
+      setAddInterestsVisible(false);
+      setAddLinkVisible(false);
       return;
     } else {
       if (newPotentialInterest.trim() === "") {
@@ -181,6 +194,36 @@ const ProfileForm = () => {
 
         setNewPotentialInterest("");
         setaddPotentialInterestsVisible(!addPotentialInterestsVisible);
+        setEditMode(true);
+      } catch (err) {
+        console.error("Validation Error:", err.message);
+      }
+    }
+  };
+
+  // Handle Profile Link add
+  const handleAddLink = async () => {
+    if (!addLinkVisible) {
+      setAddLinkVisible(!addLinkVisible);
+      setAddInterestsVisible(false);
+      setaddPotentialInterestsVisible(false);
+      return;
+    } else {
+      if (newLink.address === "") {
+        setAddLinkVisible(!addLinkVisible);
+        return;
+      }
+      try {
+        console.log(newLink);
+        const updatedList = [...newLinkList, newLink];
+        await schema.fields.userLink.validate(updatedList);
+        setNewLinkList((prevList) => {
+          const updatedList = [...prevList, newLink];
+          console.log("Updated Link List:", updatedList);
+          return updatedList;
+        });
+        setNewLink({});
+        setAddLinkVisible(!addLinkVisible);
         setEditMode(true);
       } catch (err) {
         console.error("Validation Error:", err.message);
@@ -348,19 +391,44 @@ const ProfileForm = () => {
         </AditionalChoiceBox>
         <AditionalChoiceBox>
           <FormText>Your links:</FormText>
-          <LinkBox>
-            <FormText
-              style={{
-                borderBottom: "1px solid #000000",
-                fontSize: "24px",
-              }}
-            >
-              LinkedIn
-            </FormText>
-            <LinkAddress>https://www.linkedin.com/feed/</LinkAddress>
-            <img src={DeleteTrashCan} />
-          </LinkBox>
-          <ButtonAdd type='button' />
+          {newLinkList &&
+            newLinkList.map((link, index) => (
+              <LinkBox key={index}>
+                <FormText
+                  key={index}
+                  style={{
+                    borderBottom: "1px solid #000000",
+                    fontSize: "24px",
+                  }}
+                >
+                  {link.name}
+                </FormText>
+                <LinkAddress>{link.address}</LinkAddress>
+                <img src={DeleteTrashCan} />
+              </LinkBox>
+            ))}
+          {addLinkVisible && (
+            <LinkBox>
+              <InterestInput
+                id='linkName'
+                style={{ width: "100%" }}
+                onChange={(e) =>
+                  setNewLink((prev) => ({ ...prev, name: e.target.value }))
+                }
+              />
+              <InterestInput
+                id='linkAddress'
+                style={{ width: "100%" }}
+                onChange={(e) =>
+                  setNewLink((prev) => ({ ...prev, address: e.target.value }))
+                }
+              />
+            </LinkBox>
+          )}
+          <ButtonAdd
+            type='button'
+            onClick={handleAddLink}
+          />
         </AditionalChoiceBox>
         {/* Submit Button */}
         {editMode && (

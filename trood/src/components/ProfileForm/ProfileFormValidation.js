@@ -78,13 +78,25 @@ export const schema = yup.object().shape({
         )
         .max(10, "You can have up to 10 interests."),
     userLink: yup
-        .string()
-        .url("Must be a valid URL.")
-        .matches(
-            /^(http:\/\/|https:\/\/)/,
-            "URL must start with http:// or https://."
+        .array()
+        .of(
+            yup.object().shape({
+                name: yup
+                    .string()
+                    .max(20, "Name must be less than 20 characters.")
+                    .required("Name is required."),
+                address: yup
+                    .string()
+                    .url("Must be a valid URL.")
+                    .matches(
+                        /^(http:\/\/|https:\/\/)/,
+                        "URL must start with http:// or https://."
+                    )
+                    .max(200, "URL must be less than 200 characters.")
+                    .required("Link is required."),
+            })
         )
-        .max(200, "URL must be less than 200 characters."),
+        .max(10, "You can have up to 10 links."),
     userPich: yup
         .string()
         .max(200, "Pitch must be at most 200 characters.")

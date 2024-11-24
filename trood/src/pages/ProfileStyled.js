@@ -2,8 +2,8 @@ import styled from 'styled-components';
 
 export const ProfileStyled = styled.div`
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto;
     grid-template-columns: max-content 1fr;
     gap: 10px;
-    height: 100vh;
+    padding: 10px;
 `
