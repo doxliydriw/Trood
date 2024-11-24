@@ -9,7 +9,6 @@ export const getUserFromStorage = () =>
     const userData = localStorage.getItem("userData");
     if (userData) {
         const userObject = JSON.parse(userData);
-        console.log("User Data:", userObject);
         return userObject;
     } else {
         return null;

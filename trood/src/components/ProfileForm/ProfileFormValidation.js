@@ -54,19 +54,29 @@ export const schema = yup.object().shape({
             "Address can only contain letters, digits, spaces, dots, and commas."
         ),
     userInterests: yup
-        .string()
-        .max(30, "Interests must be less than 30 characters.")
-        .matches(
-            /^[a-zA-Z0-9 ,.\-]+$/,
-            "Interests can only contain letters, digits, spaces, commas, dots, and hyphens."
-        ),
+        .array()
+        .of(
+            yup
+                .string()
+                .max(30, "Each interest must be less than 30 characters.")
+                .matches(
+                    /^[a-zA-Z0-9 ,.\-]+$/,
+                    "Interests can only contain letters, digits, spaces, commas, dots, and hyphens."
+                )
+        )
+        .max(10, "You can have up to 10 interests."),
     userPotentialInterests: yup
-        .string()
-        .max(30, "Interests must be less than 30 characters.")
-        .matches(
-            /^[a-zA-Z0-9 ,.\-]+$/,
-            "Interests can only contain letters, digits, spaces, commas, dots, and hyphens."
-        ),
+        .array()
+        .of(
+            yup
+                .string()
+                .max(30, "Each interest must be less than 30 characters.")
+                .matches(
+                    /^[a-zA-Z0-9 ,.\-]+$/,
+                    "Interests can only contain letters, digits, spaces, commas, dots, and hyphens."
+                )
+        )
+        .max(10, "You can have up to 10 interests."),
     userLink: yup
         .string()
         .url("Must be a valid URL.")

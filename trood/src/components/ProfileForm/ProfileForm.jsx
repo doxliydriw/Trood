@@ -39,6 +39,12 @@ const ProfileForm = () => {
   const [addInterestsVisible, setAddInterestsVisible] = useState(false);
   const [newInterest, setNewInterest] = useState("");
   const [newInterestList, setNewInterestList] = useState([]);
+  /* Control openning of input to add a new Potential interest to users list
+  of interests */
+  const [addPotentialInterestsVisible, setaddPotentialInterestsVisible] =
+    useState(false);
+  const [newPotentialInterest, setNewPotentialInterest] = useState("");
+  const [newPotentialInterestList, setNewPotentialInterestList] = useState([]);
 
   /* Check if user data is available in lockalstorage
   and pass it to form values
@@ -53,6 +59,9 @@ const ProfileForm = () => {
       setInitialValues(storedUserData);
       if (storedUserData.userInterests) {
         setNewInterestList(storedUserData.userInterests);
+      }
+      if (storedUserData.userPotentialInterests) {
+        setNewPotentialInterestList(storedUserData.userPotentialInterests);
       }
       setAvatarPreview(storedUserData.avatar ? storedUserData.avatar : null);
     } else {
@@ -107,14 +116,11 @@ const ProfileForm = () => {
     enableReinitialize: true,
     validateOnChange: true,
     onSubmit: async (values) => {
-      let updatedValues = values;
-      if (newInterestList) {
-        updatedValues = {
-          ...values,
-          userInterests: newInterestList,
-        };
-      }
-      console.log("Formik Values on Submit:", updatedValues);
+      const updatedValues = {
+        ...values,
+        userInterests: newInterestList,
+        userPotentialInterests: newPotentialInterestList,
+      };
       saveUserTostorage(updatedValues);
       console.log("Submitted:", updatedValues);
       setEditMode(false);
@@ -137,14 +143,14 @@ const ProfileForm = () => {
         return;
       }
       try {
-        console.log(newInterest);
-        await schema.fields.userInterests.validate(newInterest);
+        const updatedList = [...newInterestList, newInterest];
+        await schema.fields.userInterests.validate(updatedList);
         setNewInterestList((prevList) => {
           const updatedList = [...prevList, newInterest];
           console.log("Updated Interest List:", updatedList);
           return updatedList;
         });
-        console.log(newInterestList);
+
         setNewInterest("");
         setAddInterestsVisible(!addInterestsVisible);
         setEditMode(true);
@@ -153,6 +159,38 @@ const ProfileForm = () => {
       }
     }
   };
+
+  //Handle Potential interest add
+  const handlePotentialInterestAdd = async () => {
+    if (!addPotentialInterestsVisible) {
+      setaddPotentialInterestsVisible(!addPotentialInterestsVisible);
+      return;
+    } else {
+      if (newPotentialInterest.trim() === "") {
+        setaddPotentialInterestsVisible(!addPotentialInterestsVisible);
+        return;
+      }
+      try {
+        const updatedList = [...newPotentialInterestList, newPotentialInterest];
+        await schema.fields.userPotentialInterests.validate(updatedList);
+        setNewPotentialInterestList((prevList) => {
+          const updatedList = [...prevList, newPotentialInterest];
+          console.log("Updated Potential Interest List:", updatedList);
+          return updatedList;
+        });
+
+        setNewPotentialInterest("");
+        setaddPotentialInterestsVisible(!addPotentialInterestsVisible);
+        setEditMode(true);
+      } catch (err) {
+        console.error("Validation Error:", err.message);
+      }
+    }
+  };
+
+  useEffect(() => {
+    console.log("Formik values updated:", formik.values);
+  }, [formik.values]);
 
   //Reset form data to the state when page was rendered.
   const cancelEdit = (initialValues) => {
@@ -288,8 +326,8 @@ const ProfileForm = () => {
         </AditionalChoiceBox>
         <AditionalChoiceBox>
           <FormText>Potential interests:</FormText>
-          {formik.values.userPotentialInterests &&
-            formik.values.userPotentialInterests.map((interest, index) => (
+          {newPotentialInterestList &&
+            newPotentialInterestList.map((interest, index) => (
               <InterestBubble
                 type='button'
                 key={index}
@@ -297,9 +335,15 @@ const ProfileForm = () => {
                 {interest}
               </InterestBubble>
             ))}
+          {addPotentialInterestsVisible && (
+            <InterestInput
+              id='PotentialInterestInput'
+              onChange={(e) => setNewPotentialInterest(e.target.value)}
+            />
+          )}
           <ButtonAdd
             type='button'
-            $topstyles='anchor-name: --potential_interests'
+            onClick={handlePotentialInterestAdd}
           />
         </AditionalChoiceBox>
         <AditionalChoiceBox>
@@ -328,12 +372,7 @@ const ProfileForm = () => {
             >
               Cancel
             </BasicButton>
-            <BasicButton
-              type='submit'
-              onClick={formik.handleSubmit}
-            >
-              Submit
-            </BasicButton>
+            <BasicButton type='submit'>Submit</BasicButton>
           </ChoiceBlock>
         )}
       </ProfileFormBox>
