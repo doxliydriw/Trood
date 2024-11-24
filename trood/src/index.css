@@ -1,11 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto:wght@400;700&display=swap");
+
 @font-face {
   font-family: "Aeroport";
   src: url("./fonts/Aeroport-regular-trial.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto:wght@400;700&display=swap");
 
 :root {
   font-family: "Aeroport", "Inter", "Roboto", sans-serif;
