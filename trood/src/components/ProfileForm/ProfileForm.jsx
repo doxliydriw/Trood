@@ -15,7 +15,6 @@ import {
   FormTextInput,
   InterestBubble,
   ProfileFormBox,
-  PopOver,
   PrivacyRadioGroup,
   ProfileFormLayout,
   RadioBox,
@@ -39,6 +38,7 @@ const ProfileForm = () => {
   of interests */
   const [addInterestsVisible, setAddInterestsVisible] = useState(false);
   const [newInterest, setNewInterest] = useState("");
+  const [newInterestList, setNewInterestList] = useState([]);
 
   /* Check if user data is available in lockalstorage
   and pass it to form values
@@ -51,6 +51,9 @@ const ProfileForm = () => {
     });
     if (storedUserData) {
       setInitialValues(storedUserData);
+      if (storedUserData.userInterests) {
+        setNewInterestList(storedUserData.userInterests);
+      }
       setAvatarPreview(storedUserData.avatar ? storedUserData.avatar : null);
     } else {
       setInitialValues({ ...defaults, avatar: null });
@@ -104,8 +107,16 @@ const ProfileForm = () => {
     enableReinitialize: true,
     validateOnChange: true,
     onSubmit: async (values) => {
-      saveUserTostorage(values);
-      console.log("Submitted:", values);
+      let updatedValues = values;
+      if (newInterestList) {
+        updatedValues = {
+          ...values,
+          userInterests: newInterestList,
+        };
+      }
+      console.log("Formik Values on Submit:", updatedValues);
+      saveUserTostorage(updatedValues);
+      console.log("Submitted:", updatedValues);
       setEditMode(false);
     },
   });
@@ -126,15 +137,14 @@ const ProfileForm = () => {
         return;
       }
       try {
+        console.log(newInterest);
         await schema.fields.userInterests.validate(newInterest);
-        console.log("we should add: ", newInterest);
-        formik.setFieldValue("userInterests", [
-          ...formik.values.userInterests,
-          newInterest.trim(),
-        ]);
-        await formik.validateForm();
-        // formik.handleChange(formik.values.userInterests);
-        console.log("updated values ", formik.values);
+        setNewInterestList((prevList) => {
+          const updatedList = [...prevList, newInterest];
+          console.log("Updated Interest List:", updatedList);
+          return updatedList;
+        });
+        console.log(newInterestList);
         setNewInterest("");
         setAddInterestsVisible(!addInterestsVisible);
         setEditMode(true);
@@ -145,10 +155,11 @@ const ProfileForm = () => {
   };
 
   //Reset form data to the state when page was rendered.
-  const cancelEdit = (storedUserData) => {
-    formik.setValues(storedUserData);
+  const cancelEdit = (initialValues) => {
+    formik.setValues(initialValues);
     formik.setErrors({});
-    setAvatarPreview(storedUserData.avatar);
+    formik.setTouched({});
+    setAvatarPreview(initialValues.avatar);
     setEditMode(false);
   };
 
@@ -255,8 +266,8 @@ const ProfileForm = () => {
         {/* Additional  choices */}
         <AditionalChoiceBox>
           <FormText>The scopes of your interest:</FormText>
-          {formik.values.userInterests &&
-            formik.values.userInterests.map((interest, index) => (
+          {newInterestList &&
+            newInterestList.map((interest, index) => (
               <InterestBubble
                 type='button'
                 key={index}
@@ -286,20 +297,11 @@ const ProfileForm = () => {
                 {interest}
               </InterestBubble>
             ))}
-          <InterestBubble type='button'>React</InterestBubble>
-          <InterestBubble type='button'>javascript</InterestBubble>
-          <InterestBubble type='button'>Python</InterestBubble>
           <ButtonAdd
             type='button'
-            popovertarget='potential_interests'
             $topstyles='anchor-name: --potential_interests'
           />
         </AditionalChoiceBox>
-        <PopOver
-          id='potential_interests'
-          $topstyles='position-anchor: --potential_interests'
-          rowx='1'
-        />
         <AditionalChoiceBox>
           <FormText>Your links:</FormText>
           <LinkBox>
@@ -316,11 +318,6 @@ const ProfileForm = () => {
           </LinkBox>
           <ButtonAdd type='button' />
         </AditionalChoiceBox>
-        <PopOver
-          id='potential_interests'
-          $topstyles='position-anchor: --potential_interests'
-          rowx='1'
-        />
         {/* Submit Button */}
         {editMode && (
           <ChoiceBlock>
@@ -331,7 +328,12 @@ const ProfileForm = () => {
             >
               Cancel
             </BasicButton>
-            <BasicButton type='submit'>Submit</BasicButton>
+            <BasicButton
+              type='submit'
+              onClick={formik.handleSubmit}
+            >
+              Submit
+            </BasicButton>
           </ChoiceBlock>
         )}
       </ProfileFormBox>

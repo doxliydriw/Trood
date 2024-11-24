@@ -155,34 +155,6 @@ cursor: pointer;
 ${({ $topstyles }) => $topstyles};
 `
 
-export const PopOver = styled.textarea.attrs({
-  popover: "",
-  rows: 1,
-})`
-resize: none;
-width: 150px;
-font-family: Roboto, sans-serif;
-font-size: 18px;
-font-weight: 400;
-line-height: 32.49px;
-background: #D9D9D9;
-color: #49535C;
-z-index: 10;
-border: 2px solid #00000061;
-border-radius: 16px;
-padding: 5px;
-position: absolute;
-inset: auto;
-bottom: anchor(top);
-left: anchor(right);
-
-&:focus {
-outline: none;
-}
-
-${({ $topstyles }) => $topstyles};
-`
-
 export const InterestBubble = styled.button`
 border: 2px solid #00000061;
 color: #49535C;
