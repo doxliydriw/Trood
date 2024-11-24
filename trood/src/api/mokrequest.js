@@ -12,7 +12,6 @@ export const getUserFromStorage = () =>
         console.log("User Data:", userObject);
         return userObject;
     } else {
-        console.log("No user data found in localStorage.");
         return null;
     }
 }

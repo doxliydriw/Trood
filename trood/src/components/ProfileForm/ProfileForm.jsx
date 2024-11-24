@@ -23,6 +23,7 @@ import {
   RadioInputLabel,
   LinkBox,
   LinkAddress,
+  InterestInput,
 } from "./ProfileFormStyled";
 
 import { formFields } from "../../components/ProfileForm/ProfileFormValidation";
@@ -34,6 +35,10 @@ const ProfileForm = () => {
   const [initialValues, setInitialValues] = useState(null);
   // Make /cancel/ /save/ buttons visible when form changes.
   const [editMode, setEditMode] = useState(false);
+  /* Control openning of input to add a new interest to users list
+  of interests */
+  const [addInterestsVisible, setAddInterestsVisible] = useState(false);
+  const [newInterest, setNewInterest] = useState("");
 
   /* Check if user data is available in lockalstorage
   and pass it to form values
@@ -44,7 +49,6 @@ const ProfileForm = () => {
     Object.keys(formFields).forEach((key) => {
       defaults[key] = storedUserData?.[key] || "";
     });
-    console.log("inside useEffect", storedUserData);
     if (storedUserData) {
       setInitialValues(storedUserData);
       setAvatarPreview(storedUserData.avatar ? storedUserData.avatar : null);
@@ -72,7 +76,6 @@ const ProfileForm = () => {
         formik.setFieldValue("avatar", base64Avatar);
         setAvatarPreview(URL.createObjectURL(file));
         event.target.value = "";
-        console.log(file);
       } catch (error) {
         console.error("Error converting Blob to Base64:", error);
       }
@@ -99,7 +102,7 @@ const ProfileForm = () => {
     initialValues: initialValues || {},
     validationSchema: schema,
     enableReinitialize: true,
-    validateOnChange: false,
+    validateOnChange: true,
     onSubmit: async (values) => {
       saveUserTostorage(values);
       console.log("Submitted:", values);
@@ -110,6 +113,35 @@ const ProfileForm = () => {
   const handleChangeWithEditMode = (e) => {
     setEditMode(true);
     formik.handleChange(e);
+  };
+
+  //Handle interest add
+  const handleInterestAdd = async () => {
+    if (!addInterestsVisible) {
+      setAddInterestsVisible(!addInterestsVisible);
+      return;
+    } else {
+      if (newInterest.trim() === "") {
+        setAddInterestsVisible(!addInterestsVisible);
+        return;
+      }
+      try {
+        await schema.fields.userInterests.validate(newInterest);
+        console.log("we should add: ", newInterest);
+        formik.setFieldValue("userInterests", [
+          ...formik.values.userInterests,
+          newInterest.trim(),
+        ]);
+        await formik.validateForm();
+        // formik.handleChange(formik.values.userInterests);
+        console.log("updated values ", formik.values);
+        setNewInterest("");
+        setAddInterestsVisible(!addInterestsVisible);
+        setEditMode(true);
+      } catch (err) {
+        console.error("Validation Error:", err.message);
+      }
+    }
   };
 
   //Reset form data to the state when page was rendered.
@@ -223,31 +255,40 @@ const ProfileForm = () => {
         {/* Additional  choices */}
         <AditionalChoiceBox>
           <FormText>The scopes of your interest:</FormText>
-          <InterestBubble type='button'>React</InterestBubble>
-          <InterestBubble type='button'>javascript</InterestBubble>
-          <InterestBubble type='button'>Python</InterestBubble>
-          <InterestBubble type='button'>React</InterestBubble>
-          <InterestBubble type='button'>Python</InterestBubble>
-          <InterestBubble type='button'>React</InterestBubble>
+          {formik.values.userInterests &&
+            formik.values.userInterests.map((interest, index) => (
+              <InterestBubble
+                type='button'
+                key={index}
+              >
+                {interest}
+              </InterestBubble>
+            ))}
+          {addInterestsVisible && (
+            <InterestInput
+              id='InterestInput'
+              onChange={(e) => setNewInterest(e.target.value)}
+            />
+          )}
           <ButtonAdd
             type='button'
-            popovertarget='interests'
-            $topstyles='anchor-name: --interests'
+            onClick={handleInterestAdd}
           />
         </AditionalChoiceBox>
-        <PopOver
-          id='interests'
-          $topstyles='position-anchor: --interests'
-          rowx='1'
-        />
         <AditionalChoiceBox>
           <FormText>Potential interests:</FormText>
+          {formik.values.userPotentialInterests &&
+            formik.values.userPotentialInterests.map((interest, index) => (
+              <InterestBubble
+                type='button'
+                key={index}
+              >
+                {interest}
+              </InterestBubble>
+            ))}
           <InterestBubble type='button'>React</InterestBubble>
           <InterestBubble type='button'>javascript</InterestBubble>
           <InterestBubble type='button'>Python</InterestBubble>
-          <InterestBubble type='button'>React</InterestBubble>
-          <InterestBubble type='button'>Python</InterestBubble>
-          <InterestBubble type='button'>React</InterestBubble>
           <ButtonAdd
             type='button'
             popovertarget='potential_interests'

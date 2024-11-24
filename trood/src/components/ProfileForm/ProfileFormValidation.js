@@ -116,4 +116,16 @@ export const formFields = {
         type: "text",
         label: "Pitch",
     },
+    userInterests: [{
+        general: "user's interests",
+        label: "user's interests"
+    }],
+    userPotentialInterests: [{
+        general: "user's potential interests",
+        label: "user's potential interests"
+    }],
+    userLink: [{
+        general: "user's  links",
+        label: "user's links"
+    }]
 };

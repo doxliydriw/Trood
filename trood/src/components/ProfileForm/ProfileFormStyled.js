@@ -196,6 +196,23 @@ background-color: transparent;
 cursor: pointer;
 `
 
+export const InterestInput = styled.input`
+border: none;
+width: 670px;
+border-bottom: 1.41px solid #00000061;
+background-color: transparent;
+font-family: Roboto, sans-serif;
+font-size: 22.6px;
+font-weight: 400;
+line-height: 32.49px;
+text-align: left;
+
+&:focus {
+  outline: none;
+}
+`
+
+
 export const LinkBox = styled.div`
 width: 100%;
 display: grid;
