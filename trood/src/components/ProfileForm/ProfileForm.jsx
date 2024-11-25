@@ -35,12 +35,12 @@ const ProfileForm = () => {
   // Make /cancel/ /save/ buttons visible when form changes.
   const [editMode, setEditMode] = useState(false);
   /* Control openning of input to add a new interest to users list
-  of interests */
+    of interests */
   const [addInterestsVisible, setAddInterestsVisible] = useState(false);
   const [newInterest, setNewInterest] = useState("");
   const [newInterestList, setNewInterestList] = useState([]);
   /* Control openning of input to add a new Potential interest to users list
-  of interests */
+    of interests */
   const [addPotentialInterestsVisible, setaddPotentialInterestsVisible] =
     useState(false);
   const [newPotentialInterest, setNewPotentialInterest] = useState("");
@@ -52,8 +52,8 @@ const ProfileForm = () => {
   const [newLinkList, setNewLinkList] = useState([]);
 
   /* Check if user data is available in lockalstorage
-  and pass it to form values
-*/
+    and pass it to form values
+  */
   useEffect(() => {
     const storedUserData = getUserFromStorage();
     const defaults = {};
@@ -61,7 +61,10 @@ const ProfileForm = () => {
       defaults[key] = storedUserData?.[key] || "";
     });
     if (storedUserData) {
-      setInitialValues(storedUserData);
+      setInitialValues({
+        ...storedUserData,
+        privacy: storedUserData.privacy || "Private",
+      });
       if (storedUserData.userInterests) {
         setNewInterestList(storedUserData.userInterests);
       }
@@ -119,7 +122,7 @@ const ProfileForm = () => {
 
   // Formik setup
   const formik = useFormik({
-    initialValues: initialValues || {},
+    initialValues: initialValues || { privacy: "Private" },
     validationSchema: schema,
     enableReinitialize: true,
     validateOnChange: true,
@@ -234,6 +237,10 @@ const ProfileForm = () => {
     setEditMode(false);
   };
 
+  useEffect(() => {
+    console.log("Formik values updated:", formik.values);
+  }, [formik.values]);
+
   // Wait till initialValues are loaded
   if (!initialValues) {
     return <div>Loading...</div>;
@@ -271,9 +278,12 @@ const ProfileForm = () => {
         {Object.entries(formFields)
           .filter(
             ([key]) =>
-              !["userInterests", "userPotentialInterests", "userLink"].includes(
-                key
-              )
+              ![
+                "userInterests",
+                "userPotentialInterests",
+                "userLink",
+                "privacy",
+              ].includes(key)
           )
           .map(([key, value]) => (
             <label

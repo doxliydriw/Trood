@@ -104,6 +104,10 @@ export const schema = yup.object().shape({
             /^[a-zA-Z0-9\s.,]*$/,
             "Pitch can only contain letters, digits, spaces, dots, and commas."
         ),
+    privacy: yup
+        .string()
+        .oneOf(["Private", "Public"], "You must select either Private or Public.")
+        .required("Privacy setting is required."),
 });
 
 
@@ -149,5 +153,8 @@ export const formFields = {
     userLink: [{
         general: "user's  links",
         label: "user's links"
-    }]
+    }],
+    privacy: [
+
+    ],
 };
