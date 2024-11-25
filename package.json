@@ -1,7 +1,8 @@
 {
   "name": "trood",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
+  "homepage": "https://doxliydriw.github.io/Trood/",
   "type": "module",
   "scripts": {
     "dev": "vite",
