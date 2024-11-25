@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react'
 
 
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/Trood/trood' : '/',
+  base: command === 'build' ? '/Trood/' : '/',
   plugins: [react()],
 }));
