@@ -16,7 +16,6 @@ jobs:
           node-version: 18
       - name: Install dependencies
         run: |
-          cd trood
           npm install
       - name: Build project
         run: |
